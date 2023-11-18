@@ -14,6 +14,24 @@ async def add_to_db(val: str, status: int):
     if await check_in_db(val) is None:
         sql = """INSERT INTO pallet(id, now_status, changed)VALUES (?, ?, ?)"""
         await db.execute(sql, [val, status, _get_now_formatted()])
+        return {"status": 200}
+    return {"status": 0}
+
+
+async def update_in_db(id: str, status: int):
+    if await check_in_db(id) is not None:
+        sql="UPDATE pallet SET now_status=? WHERE id=?"
+        await db.execute(sql, [status, id])
+        return {"status": 200}
+    return {"status": 0}
+
+
+async def delete_from_db(id: str):
+    if await check_in_db(id) is not None:
+        sql = f"DELETE FROM pallet WHERE id=?"
+        await db.execute(sql, [id])
+        return {"status": 200}
+    return {"status": 0}
 
 
 def _get_now_formatted() -> str:
