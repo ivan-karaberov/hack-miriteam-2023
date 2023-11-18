@@ -32,8 +32,6 @@ async def delete_from_db(id: str):
         await db.execute(sql, [id])
         return {"status": 200}
     return {"status": 0}
-
-
 def _get_now_formatted() -> str:
     """Возвращает настоящую Дату и время строкой"""
     return _get_now_datetime().strftime(config.DATETIME_FORMAT)
