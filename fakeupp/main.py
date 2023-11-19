@@ -8,9 +8,9 @@ app = FastAPI()
 
 
 def generate_id():
-    str_ = f'E{random.randint(1000, 15000)}'
+    str_ = f'EU{random.randint(1000, 15000)}'
     #return [str_]
-    return ['EU000045', 'EU000090']
+    return ['EUR000094', 'EUR000090']
 
 
 @app.get('/pallets')

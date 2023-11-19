@@ -26,9 +26,10 @@ class DS(BaseModel):
 @app.post("/send_id")
 async def send_id(data: Item):
     '''Обработка POST запроса от uppConnect'''
-    print(data.data)
+    print("TEst", data.data)
     for i in data.data:
         if i is not None:
+            print(i)
             await add_to_db(i, 0)
 
 
@@ -40,10 +41,8 @@ async def update_id(data: Camera):
         status = requests.post("http://127.0.0.3:8000/ud", json=params)
         print(type(status.status_code))
         if status.status_code == 200:
-            print("YOPTA", data.id, data.status)
             return await update_in_db(data.id, data.status)
     else:
-        print("PIZDEC", data.id, data.status)
         return await update_in_db(data.id, data.status)
 
 
