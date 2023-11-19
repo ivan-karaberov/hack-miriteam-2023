@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import requests
 
-from services.checkDB import add_to_db, update_in_db, delete_from_db
+from services.checkDB import add_to_db, update_in_db
+import stats
 
 
 app = FastAPI()
@@ -18,8 +19,8 @@ class Camera(BaseModel):
 
 
 class DS(BaseModel):
-    status: int
     id: str
+    status: int
 
 
 @app.post("/send_id")
@@ -27,7 +28,8 @@ async def send_id(data: Item):
     '''Обработка POST запроса от uppConnect'''
     print(data.data)
     for i in data.data:
-        await add_to_db(i, 0)
+        if i is not None:
+            await add_to_db(i, 0)
 
 
 @app.post("/update_data")
@@ -35,14 +37,16 @@ async def update_id(data: Camera):
     '''Обновление данных в БД'''
     if(data.status == 2):
         params={"id":data.id}
-        requests.post("http://127.0.0.1:5000/pallets", json=params)
-        return {"status": 200}
+        status = requests.post("http://127.0.0.3:8000/ud", json=params)
+        print(type(status.status_code))
+        if status.status_code == 200:
+            print("YOPTA", data.id, data.status)
+            return await update_in_db(data.id, data.status)
     else:
+        print("PIZDEC", data.id, data.status)
         return await update_in_db(data.id, data.status)
 
 
-@app.post("/data_success")
-async def data_success(data: DS):
-    '''Обработка ответа от wms и удаление данных из БД'''
-    if data.status == 200:
-        return await delete_from_db(data.id)
+@app.get("/get_daily_stat")
+async def get_daily_stat():
+    return await stats.stat()

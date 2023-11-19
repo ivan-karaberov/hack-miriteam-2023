@@ -2,12 +2,17 @@ import asyncio
 
 import requests
 
+
 async def get_id():
     '''Получение id-паллета с системы upp'''
-    request = requests.get("http://127.0.0.1:5000/pallets")
-    id = []
-    if request.status_code == 200:
-        id = request.json()["id"]
+    id = list()
+    try:
+        request = requests.get("http://127.0.0.2:8000/pallets")
+        if request.status_code == 200 and len(request.json()):
+            id = request.json()
+            print(id)
+    except Exception:
+        print('Failed Connect')
     return id
 
 
