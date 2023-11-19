@@ -28,10 +28,21 @@ async def update_in_db(id: str, status: int):
 
 async def delete_from_db(id: str):
     if await check_in_db(id) is not None:
-        sql = f"DELETE FROM pallet WHERE id=?"
+        sql = "DELETE FROM pallet WHERE id=?"
         await db.execute(sql, [id])
         return {"status": 200}
     return {"status": 0}
+
+
+async def get_daily_stat():
+    now = _get_now_datetime()
+    today = f'{now.year:04d}-{now.month:02d}-{now.day}'
+    sql = f"""SELECT id, now_status, changed FROM pallet
+              WHERE changed >= '{today}' ORDER BY now_status"""
+    row = await db.fetch_all(sql)
+    return row
+
+
 def _get_now_formatted() -> str:
     """Возвращает настоящую Дату и время строкой"""
     return _get_now_datetime().strftime(config.DATETIME_FORMAT)
